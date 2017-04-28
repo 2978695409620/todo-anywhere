@@ -11,7 +11,7 @@ def hello_world():
 def todo_list_all():
     return 'Page for exploring all todo lists'
 
-@app.route('/list/<int:list_id>')
+@app.route('/list/<int:list_id>/')
 def todo_list(list_id):
     return 'Page for a todo list'
 
