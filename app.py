@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/todo-anywhere'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/todo-anywhere'
 heroku = Heroku(app)
 db = SQLAlchemy(app)
 
