@@ -1,21 +1,18 @@
 import os
 
 from flask import Flask, render_template, url_for, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from model import Base, TodoList, TodoItem
-
-from flask_heroku import Heroku
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+DATABASE_URI = os.environ.get("DATABASE_URL", 'postgresql://localhost/todo-anywhere')
+engine = create_engine(DATABASE_URI)
+Base.metadata.bind = engine
 
-DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://localhost/todo-anywhere')
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
-heroku = Heroku(app)
-db = SQLAlchemy(app)
-
-session = db.session
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 ERROR_LIST_NOT_FOUND = 'Todo list not found'
 ERROR_ITEM_NOT_FOUND = 'Todo item not found'
