@@ -33,9 +33,3 @@ class TodoItem(Base):
 			'id': self.id,
 			'description': self.description,
 		}
-
-
-engine = create_engine('postgresql://localhost/todo-anywhere')
-
-
-Base.metadata.create_all(engine)
