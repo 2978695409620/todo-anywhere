@@ -33,7 +33,7 @@ def todo_list_all():
 def todo_list(list_id):
     return 'Page for a todo list'
 
-@app.route('/list/<int:list_id>/random', methods=['GET'])
+@app.route('/list/<int:list_id>/random/', methods=['GET'])
 def random_todo(list_id):
     return 'Page for a random todo item'
 
@@ -99,7 +99,7 @@ def api_delete_list(list_id):
 # --------------------------------- API Routes for list items ---------------------------------
 
 # Create a todo item for a todo list
-@app.route('/api/list/<int:list_id>/item', methods=['POST'])
+@app.route('/api/list/<int:list_id>/item/', methods=['POST'])
 def api_create_list_item(list_id):
 	if request.form['description']:
 		newItem = TodoItem(description=request.form['description'], list_id=list_id)
