@@ -7,7 +7,7 @@ from model import Base, TodoList, TodoItem
 
 app = Flask(__name__)
 
-DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://localhost/todo-anywhere')
+DATABASE_URI = os.environ.get("DATABASE_URL", 'postgresql://localhost/todo-anywhere')
 engine = create_engine(DATABASE_URI)
 Base.metadata.bind = engine
 
