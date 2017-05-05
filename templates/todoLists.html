@@ -1,0 +1,62 @@
+{% extends "main.html" %}
+{% block content %}
+	<div class="row top-menu">
+		<div class="col-md-10">
+		</div>
+		<div class="col-md-2 text-right">
+		</div>
+	</div>
+
+	<div class="row divider blue">
+		<div class="col-md-12">
+		</div>
+	</div>
+
+	<div class="row banner main">
+		<div class="col-md-5">
+		</div>
+		<div class="col-md-7 padding-none">
+			<h1>Todo Lists</h1>
+		</div>
+	</div>
+
+	<div class='flash'>
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<ul>
+					{% for message in messages %}
+						<li> <strong> {{ message }} </strong> </li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		{% endwith %}
+	</div>
+
+	<div class="row padding-top paddint-bottom">
+		<div class="col-md-1">
+		</div>
+		<div class="col-md-10 padding-none">
+			<a href="{{url_for('create_list')}}">
+				<button class="btn btn-default" id="create-list">
+					Create New List
+				</button>
+			</a>
+		</div>
+	</div>
+
+	<div>
+		{% for list in lists %}
+		<a href="{{url_for('edit_list', list_id = list.id)}}">
+			<div class="row">
+				<div class="col-md-1">
+				</div>
+				<div class="col-md-10 todo-list">
+						<h3>{{list.name}}</h3>
+				</div>
+				<div class="col-md-1">
+				</div>
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+{% endblock %}

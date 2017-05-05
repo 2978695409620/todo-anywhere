@@ -1,11 +1,13 @@
 import os
 
-from flask import Flask, render_template, url_for, request, jsonify
-from sqlalchemy import create_engine
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash
+from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from model import Base, TodoList, TodoItem
 
 app = Flask(__name__)
+app.debug = True
+app.secret_key = 'secret_key'
 
 DATABASE_URI = os.environ.get("DATABASE_URL", 'postgresql://localhost/todo-anywhere')
 engine = create_engine(DATABASE_URI)
@@ -26,12 +28,35 @@ def landing():
     return render_template('lists.html')
 
 @app.route('/list/', methods=['GET'])
-def todo_list_all():
-    return 'Page for exploring all todo lists'
+def show_all_lists():
+    lists = session.query(TodoList).order_by(asc(TodoList.name))
+    return render_template('todoLists.html', lists=lists)
 
-@app.route('/list/<int:list_id>/', methods=['GET'])
-def todo_list(list_id):
-    return 'Page for a todo list'
+@app.route('/list/new/', methods=['GET', 'POST'])
+def create_list():
+	if request.method == 'GET':
+		return render_template('createList.html')
+	else:
+		if request.form['name'] and request.form['name'] != '':
+			newList = TodoList(name=request.form['name'])
+			session.add(newList)
+			flash('New List Created Successfully')
+			session.commit()
+			return redirect(url_for('show_all_lists'))
+		else:
+			status = 'Must enter a valid name'
+			return render_template('createList.html', status=status)
+
+@app.route('/list/<int:list_id>/', methods=['GET', 'POST'])
+def edit_list(list_id):
+	todoList = session.query(TodoList).filter_by(id=list_id).one_or_none()
+	if request.method == 'GET':
+		return render_template('editList.html', todoList=todoList)
+	else:
+		if request.form['name']:
+			todoList.name = request.form['name']
+			flash('List Edited Successfully')
+			return redirect(url_for('show_all_lists'))
 
 @app.route('/list/<int:list_id>/random/', methods=['GET'])
 def random_todo(list_id):
