@@ -47,20 +47,125 @@ def create_list():
 			status = 'Must enter a valid name'
 			return render_template('createList.html', status=status)
 
-@app.route('/list/<int:list_id>/', methods=['GET', 'POST'])
+@app.route('/list/<int:list_id>/', methods=['GET'])
+@app.route('/list/<int:list_id>/item/', methods=['GET'])
+def show_list(list_id):
+	todoList = session.query(TodoList).filter(TodoList.id == list_id).one_or_none()
+	if todoList:
+		todoItems = session.query(TodoItem).filter(TodoItem.list_id == list_id).all()
+		return render_template('showList.html', todoList=todoList, todoItems=todoItems)
+	else:
+		flash('No list found')
+		return redirect(url_for('show_all_lists'))
+	
+
+@app.route('/list/<int:list_id>/edit/', methods=['GET', 'POST'])
 def edit_list(list_id):
 	todoList = session.query(TodoList).filter_by(id=list_id).one_or_none()
-	if request.method == 'GET':
-		return render_template('editList.html', todoList=todoList)
+	if todoList:
+		if request.method == 'GET':
+			return render_template('editList.html', todoList=todoList)
+		else:
+			if request.form['name']:
+				todoList.name = request.form['name']
+				session.commit()
+				flash('List Edited Successfully')
+				return redirect(url_for('show_all_lists'))
 	else:
-		if request.form['name']:
-			todoList.name = request.form['name']
-			flash('List Edited Successfully')
-			return redirect(url_for('show_all_lists'))
+		flash('No list found')
+		return redirect(url_for('show_all_lists'))
 
-@app.route('/list/<int:list_id>/random/', methods=['GET'])
-def random_todo(list_id):
-    return 'Page for a random todo item'
+@app.route('/list/<int:list_id>/delete/', methods=['GET', 'POST'])
+def delete_list(list_id):
+	todoList = session.query(TodoList).filter_by(id=list_id).one_or_none()
+	if todoList:
+		if request.method == 'GET':
+			return render_template('deleteList.html', todoList=todoList)
+		else:
+			todoItems = session.query(TodoItem).filter(TodoItem.list_id == list_id).all()
+			for item in todoItems:
+				session.delete(item)
+			session.commit()
+			session.delete(todoList)
+			session.commit()
+			flash('List Deleted Successfully')
+			return redirect(url_for('show_all_lists'))
+	else:
+		flash('No list found')
+		return redirect(url_for('show_all_lists'))
+
+@app.route('/list/<int:list_id>/item/<int:item_id>/', methods=['GET'])
+def show_item(list_id, item_id):
+	todoList = session.query(TodoList).filter(TodoList.id == list_id).one_or_none()
+	if not todoList:
+		flash('No list found')
+		return redirect(url_for('show_all_lists'))
+
+	todoItem = session.query(TodoItem).filter(TodoItem.list_id == list_id, TodoItem.id == item_id).one_or_none()
+	if not todoItem:
+		flash('No item found')
+		return redirect(url_for('show_list', list_id=list_id))
+
+	todoItems = session.query(TodoItem).filter(TodoItem.list_id == list_id).all()
+	return render_template('showItem.html', todoItem=todoItem)
+
+@app.route('/list/<int:list_id>/create/', methods=['GET', 'POST'])
+def create_item(list_id):
+	todoList = session.query(TodoList).filter(TodoList.id == list_id).one_or_none()
+	if todoList:
+		if request.method == 'GET':
+			return render_template('createItem.html', list_id=todoList.id)
+		else:
+			item = TodoItem(description=request.form['description'], list_id=list_id)
+			session.add(item)
+			session.commit()
+			flash('New item successfully created')
+			return redirect(url_for('show_list', list_id=list_id))
+	else:
+		flash('No list found')
+		return redirect(url_for('show_all_lists'))
+
+@app.route('/list/<int:list_id>/item/<int:item_id>/edit', methods=['GET', 'POST'])
+def edit_item(list_id, item_id):
+	todoList = session.query(TodoList).filter(TodoList.id == list_id).one_or_none()
+	if not todoList:
+		flash('No list found')
+		return redirect(url_for('show_all_lists'))
+
+	todoItem = session.query(TodoItem).filter(TodoItem.list_id == list_id, TodoItem.id == item_id).one_or_none()
+	if not todoItem:
+		flash('No item found')
+		return redirect(url_for('show_list', list_id=list_id))
+
+	if request.method == 'GET':
+		return render_template('editItem.html', todoList=todoList, todoItem=todoItem)
+	else:
+		if request.form['description']:
+			todoItem.description = request.form['description']
+			session.commit()
+			flash('List Edited Successfully')
+			return redirect(url_for('show_list', list_id=list_id))
+
+@app.route('/list/<int:list_id>/item/<int:item_id>/delete/', methods=['GET', 'POST'])
+def delete_item(list_id, item_id):
+	todoList = session.query(TodoList).filter(TodoList.id == list_id).one_or_none()
+	if not todoList:
+		flash('No list found')
+		return redirect(url_for('show_all_lists'))
+
+	todoItem = session.query(TodoItem).filter(TodoItem.list_id == list_id, TodoItem.id == item_id).one_or_none()
+	if not todoItem:
+		flash('No item found')
+		return redirect(url_for('show_list', list_id=list_id))
+
+	if request.method == 'GET':
+		return render_template('deleteItem.html', todoList=todoList, todoItem=todoItem)
+	else:
+		session.delete(todoItem)
+		session.commit()
+		flash('List Deleted Successfully')
+		return redirect(url_for('show_list', list_id=list_id))
+		
 
 # --------------------------------- API Routes for todo lists ----------------------------------
 

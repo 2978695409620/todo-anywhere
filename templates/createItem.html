@@ -1,0 +1,37 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+	<div class="row divider green">
+		<div class="col-md-12">
+		</div>
+	</div>
+
+	<div class="row banner menu">
+		<div class="col-md-11 col-md-offset-1 padding-none">
+			<h1> Create New Todo Item </h1>
+		</div>
+	</div>
+
+	<div class="create-list-error">
+		{% if status %}
+			<ul>
+				<li> <strong> {{ status }} </strong> </li>
+			</ul>
+		{% endif %}
+	</div>
+
+	<div class="row">
+		<div class="col-md-6 col-md-offset-1 padding-top">
+			<form action="#" method="post">
+				<div class="form-group">
+					<label for="description">Description:</label>
+					<input type="text" class="form-control" name="description" maxlength="150">
+					<div class="padding-bottom"></div>
+					<button type="submit" class="btn btn-default" id="submit" type="submit">
+						Create Todo Item
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}
