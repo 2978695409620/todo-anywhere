@@ -143,7 +143,7 @@ def edit_item(list_id, item_id):
 		if request.form['description']:
 			todoItem.description = request.form['description']
 			session.commit()
-			flash('List Edited Successfully')
+			flash('Item Edited Successfully')
 			return redirect(url_for('show_list', list_id=list_id))
 
 @app.route('/list/<int:list_id>/item/<int:item_id>/delete/', methods=['GET', 'POST'])
