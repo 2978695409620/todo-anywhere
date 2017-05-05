@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from model import Base, TodoList, TodoItem
 
 app = Flask(__name__)
-app.debug = True
+app.debug = False
 app.secret_key = 'secret_key'
 
 DATABASE_URI = os.environ.get("DATABASE_URL", 'postgresql://localhost/todo-anywhere')
